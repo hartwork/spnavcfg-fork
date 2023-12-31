@@ -17,10 +17,9 @@ incpath = -I. -I$(PREFIX)/include
 libpath = -L$(PREFIX)/lib
 
 CFLAGS = $(warn) $(dbg) $(opt) $(incpath) -fPIC $(add_cflags) -MMD
-CXXFLAGS = -std=c++11 $(warn) $(dbg) $(opt) $(incpath) -fPIC `pkg-config --cflags Qt5Core Qt5Gui Qt5Widgets` \
+CXXFLAGS = $(cxxstd) $(warn) $(dbg) $(opt) $(incpath) -fPIC $(qt_cflags) \
 		 $(add_cflags) -MMD
-LDFLAGS = $(libpath) `pkg-config --libs Qt5Core Qt5Gui Qt5Widgets` -lspnav -lX11 \
-		  $(add_ldflags)
+LDFLAGS = $(libpath) $(qt_libs) -lspnav -lX11 $(add_ldflags)
 
 $(bin): $(obj)
 	$(CXX) -o $@ $(obj) $(LDFLAGS)

@@ -38,6 +38,33 @@ for arg; do
 	esac
 done
 
+
+detect_qt()
+{
+	qt6libs='Qt6Core Qt6Gui Qt6Widgets'
+	qt5libs='Qt5Core Qt5Gui Qt5Widgets'
+
+	printf 'Detecting Qt libraries ... '
+
+	if pkg-config --cflags $qt6libs >/dev/null 2>&1; then
+		echo 'found Qt6'
+		qt_cflags=`pkg-config --cflags $qt6libs`
+		qt_libs=`pkg-config --libs $qt6libs`
+		cxxstd='-std=c++17'
+	elif pkg-config --cflags $qt5libs >/dev/null 2>&1; then
+		echo 'found Qt5'
+		qt_cflags=`pkg-config --cflags $qt5libs`
+		qt_libs=`pkg-config --libs $qt5libs`
+		cxxstd='-std=c++11'
+	else
+		echo 'failed to find Qt5 or Qt6' >&2
+		exit 1
+	fi
+}
+
+detect_qt
+
+echo
 echo "  prefix: $PREFIX"
 echo "  optimize for speed: $OPT"
 echo "  include debugging symbols: $DBG"
@@ -54,6 +81,10 @@ fi
 if [ "$OPT" = 'yes' ]; then
 	echo 'opt = -O3' >>Makefile
 fi
+
+echo "qt_cflags = $qt_cflags" >>Makefile
+echo "qt_libs = $qt_libs" >>Makefile
+echo "cxxstd = $cxxstd" >>Makefile
 
 if [ -n "$CFLAGS" ]; then
 	echo "add_cflags = $CFLAGS" >>Makefile
